@@ -2,323 +2,212 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Estructura para Sofi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Sofia</title>
     <style>
         body {
-            margin: 0;
-            overflow: hidden;
-            background-color: #080b12; /* Azul muy oscuro, casi negro */
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: white;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            touch-action: none; /* Prevenir scroll en móvil */
-        }
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-        #text-container {
-            position: absolute;
-            z-index: 10;
+            margin: 0;
+            background-color: #fce4ec; /* Fondo rosa pastel suave */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden; /* Evitar scroll cuando el botón crece */
+            flex-direction: column;
             text-align: center;
-            pointer-events: none;
-            mix-blend-mode: plus-lighter;
-            width: 100%;
-            padding: 0 20px;
-            box-sizing: border-box;
         }
-        .message {
-            /* Tamaño responsivo: 6% del ancho de la pantalla */
-            font-size: clamp(20px, 6vw, 50px); 
-            font-weight: 300;
-            opacity: 0;
-            letter-spacing: 2px;
-            transition: opacity 2s ease-in-out, transform 2s ease-out;
-            transform: translateY(20px);
-            /* Glow azul cian */
-            text-shadow: 0 0 15px #00d2ff, 0 0 30px #00d2ff;
-            margin-bottom: 15px;
+
+        .container {
+            position: relative;
+            z-index: 10;
         }
-        .sub-message {
-            /* Un poco más pequeño */
-            font-size: clamp(16px, 4vw, 30px);
-            opacity: 0;
-            transition: opacity 2s ease-in-out 1s, transform 2s ease-out 1s; /* Delay de 1s */
-            transform: translateY(20px);
-            color: #b388ff; /* Lila suave */
-            text-shadow: 0 0 10px #b388ff;
+
+        h1 {
+            color: #d81b60;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .gif-container img {
+            width: 200px;
+            height: auto;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
             font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
-        
-        /* Clase para activar animación */
-        .visible {
-            opacity: 1;
-            transform: translateY(0);
+
+        #yesBtn {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        #yesBtn:hover {
+            background-color: #43a047;
+            transform: scale(1.05);
+        }
+
+        #noBtn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        #noBtn:hover {
+            background-color: #e53935;
+        }
+
+        /* Animación de confeti simple para el final */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+            }
+        }
+
+        .floating-gif {
+            position: absolute;
+            width: 120px;
+            height: auto;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0;
+            animation: fadeInFloat 1s forwards;
+            border-radius: 10px;
+        }
+
+        @keyframes fadeInFloat {
+            0% { opacity: 0; transform: translateY(20px) scale(0.8); }
+            100% { opacity: 0.9; transform: translateY(0) scale(1); }
         }
     </style>
 </head>
 <body>
 
-    <div id="text-container">
-        <div id="msg1" class="message">SOFI, NO TE ESTRESES</div>
-        <div id="msg2" class="sub-message">TERMINA TU MAQUETA</div>
+    <div class="container">
+        <div class="gif-container">
+            <!-- Gif inicial: Osito triste o pidiendo -->
+            <img id="mainGif" src="https://i.pinimg.com/originals/58/c4/3e/58c43e97759448da090ea606053807ee.gif" alt="Osito pidiendo perdón">
+        </div>
+        
+        <h1 id="question">¿Me perdonas, Sofia? 🥺</h1>
+        
+        <div class="buttons">
+            <button id="yesBtn">Sí, te perdono</button>
+            <button id="noBtn">No</button>
+        </div>
     </div>
-    <canvas id="canvas"></canvas>
 
     <script>
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const question = document.getElementById('question');
+        const mainGif = document.getElementById('mainGif');
         
-        let width, height, cx, cy;
-        let scaleFactor = 1;
+        let yesBtnSize = 1.2; // Tamaño inicial en rem
+        let clickCount = 0;
 
-        // Configuración de la animación
-        let points = [];
-        const totalPoints = 720; // Resolución del dibujo
-        let drawIndex = 0;
-        let phase = 'drawing'; // drawing, waiting, particles
-        let particles = [];
+        // Frases para el botón "No"
+        const noTexts = [
+            "¿Estás segura?",
+            "¿De verdad?",
+            "Piénsalo bien...",
+            "Por favor 🥺",
+            "Mira que voy a llorar",
+            "No seas así...",
+            "Me romperás el corazón 💔",
+            "Anda, di que sí",
+            "No tienes otra opción 😎"
+        ];
 
-        // Variables del mouse/touch
-        let mouseX = -1000;
-        let mouseY = -1000;
-        let isTouching = false;
+        // Lista de GIFs tristes para cuando dice que No
+        const sadGifs = [
+            "https://i.pinimg.com/originals/eff/22/23/eff223df966d84f2a6839d9c62009551.gif", // Gato llorando
+            "https://i.pinimg.com/originals/b4/68/07/b46807276875309a3c45e7177d72d566.gif", // Panda triste
+            "https://i.pinimg.com/originals/58/c4/3e/58c43e97759448da090ea606053807ee.gif", // Osito triste
+            "https://i.pinimg.com/originals/f6/a5/f7/f6a5f79789285269951d879674498839.gif"  // Otro triste
+        ];
 
-        // --- 1. AJUSTE DE PANTALLA (RESPONSIVO) ---
-        function resize() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-            cx = width / 2;
-            cy = height / 2;
-            // Escala basada en el lado más corto para que quepa en móvil
-            scaleFactor = Math.min(width, height) * 0.4; 
+        noBtn.addEventListener('click', () => {
+            clickCount++;
             
-            // Si estamos dibujando, recalcular puntos para el nuevo tamaño
-            if (phase === 'drawing') {
-                calculateSpirograph();
-                // Reiniciar dibujo rápido si se cambia tamaño
-                drawIndex = 0; 
-                ctx.clearRect(0,0,width,height);
-            }
-        }
-        window.addEventListener('resize', resize);
-
-        // --- 2. INPUT DEL USUARIO (MOUSE & TOUCH) ---
-        function updateCoords(e) {
-            if (e.touches) {
-                mouseX = e.touches[0].clientX;
-                mouseY = e.touches[0].clientY;
-                isTouching = true;
-            } else {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-                isTouching = true;
-            }
-        }
-        
-        window.addEventListener('mousemove', updateCoords);
-        window.addEventListener('touchmove', updateCoords, {passive: false});
-        window.addEventListener('touchstart', updateCoords, {passive: false});
-        window.addEventListener('touchend', () => isTouching = false);
-
-
-        // --- 3. MATEMÁTICAS DEL DIBUJO (Espirógrafo) ---
-        function calculateSpirograph() {
-            points = [];
-            // Parámetros para una figura técnica y simétrica
-            // R = radio externo, r = radio interno, d = distancia del punto
-            const R = 100; 
-            const r = 42;  // Cambiando esto cambia el número de "puntas"
-            const d = 60; 
+            // Aumentar tamaño del botón Sí
+            yesBtnSize *= 1.3; // Crece un 30% cada vez
+            yesBtn.style.fontSize = `${yesBtnSize}rem`;
             
-            // Normalizar para que encaje en nuestro scaleFactor
-            // El valor máximo posible es R + d aprox.
-            const maxVal = R + d;
+            // Cambiar texto del botón No
+            const randomText = noTexts[Math.min(clickCount, noTexts.length - 1)];
+            noBtn.innerText = randomText;
 
-            for (let i = 0; i <= totalPoints; i++) {
-                // Damos varias vueltas (rotations) para cerrar la figura
-                const t = (Math.PI * 12 * i) / totalPoints; 
-                
-                // Ecuaciones del Hypotrochoid
-                let x = (R - r) * Math.cos(t) + d * Math.cos(((R - r) / r) * t);
-                let y = (R - r) * Math.sin(t) - d * Math.sin(((R - r) / r) * t);
+            // Agregar un GIF triste flotante en una posición aleatoria
+            const randomGif = sadGifs[Math.floor(Math.random() * sadGifs.length)];
+            const img = document.createElement('img');
+            img.src = randomGif;
+            img.classList.add('floating-gif');
+            
+            // Posición aleatoria (evitando el centro exacto donde están los botones si es posible, pero aleatorio está bien)
+            const x = Math.random() * (window.innerWidth - 150);
+            const y = Math.random() * (window.innerHeight - 150);
+            
+            img.style.left = `${x}px`;
+            img.style.top = `${y}px`;
+            
+            document.body.appendChild(img);
+        });
 
-                // Escalar
-                x = (x / maxVal) * scaleFactor;
-                y = (y / maxVal) * scaleFactor;
+        yesBtn.addEventListener('click', () => {
+            // Cambiar a estado de éxito
+            document.body.innerHTML = `
+                <div class="container">
+                    <h1 style="font-size: 3rem; color: #e91e63;">¡Siii! ¡Sabía que lo harías! ✨</h1>
+                    <div class="gif-container">
+                        <img src="https://i.pinimg.com/originals/dc/49/23/dc4923744623736929d01d0140546452.gif" alt="Baile feliz" style="width: 300px;">
+                    </div>
+                    <p style="font-size: 1.5rem; color: #880e4f;">Eres la mejor.</p>
+                </div>
+            `;
+            
+            // Lanzar confeti (efecto visual simple)
+            createConfetti();
+        });
 
-                points.push({x: x + cx, y: y + cy});
+        function createConfetti() {
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
+                document.body.appendChild(confetti);
             }
         }
-
-
-        // --- 4. SISTEMA DE PARTÍCULAS (FASE FINAL) ---
-        class Particle {
-            constructor(x, y) {
-                this.x = x;
-                this.y = y;
-                // Velocidad aleatoria inicial (explosión lenta)
-                this.vx = (Math.random() - 0.5) * 2;
-                this.vy = (Math.random() - 0.5) * 2;
-                this.friction = 0.96;
-                this.color = Math.random() > 0.5 ? '#00d2ff' : '#b388ff'; // Cian o Lila
-                this.size = Math.random() * 2 + 1;
-                
-                // Posición original para "recordar" la forma (opcional, pero lo haremos fluido libre)
-                this.baseX = x;
-                this.baseY = y;
-            }
-
-            update() {
-                // Física básica
-                this.x += this.vx;
-                this.y += this.vy;
-                this.vx *= this.friction;
-                this.vy *= this.friction;
-
-                // INTERACCIÓN: Si el mouse está cerca, las partículas huyen o son atraídas
-                // Haremos un efecto de "remolino" suave
-                if (isTouching) {
-                    const dx = mouseX - this.x;
-                    const dy = mouseY - this.y;
-                    const distance = Math.sqrt(dx*dx + dy*dy);
-                    const maxDist = 200;
-
-                    if (distance < maxDist) {
-                        const force = (maxDist - distance) / maxDist;
-                        // Empujar suavemente
-                        const angle = Math.atan2(dy, dx);
-                        // Un poco de movimiento orbital
-                        this.vx -= Math.cos(angle) * force * 1.5;
-                        this.vy -= Math.sin(angle) * force * 1.5;
-                        
-                        // Añadir un poco de caos
-                        this.vx += (Math.random()-0.5) * 0.5;
-                    }
-                }
-
-                // Rebotar en bordes
-                if (this.x < 0 || this.x > width) this.vx *= -1;
-                if (this.y < 0 || this.y > height) this.vy *= -1;
-            }
-
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = this.color;
-                ctx.fill();
-            }
-        }
-
-        // Inicializar partículas basadas en el dibujo final
-        function explodeToParticles() {
-            phase = 'particles';
-            particles = [];
-            // Convertir cada punto del dibujo en una partícula
-            for(let p of points) {
-                // Crear varias partículas por punto para más densidad
-                particles.push(new Particle(p.x, p.y));
-                particles.push(new Particle(p.x + (Math.random()-0.5)*10, p.y + (Math.random()-0.5)*10));
-            }
-            console.log("Modo interactivo activado. Toca la pantalla.");
-        }
-
-
-        // --- 5. BUCLE PRINCIPAL DE ANIMACIÓN ---
-        function loop() {
-            // Efecto de "trail" (rastro) suave
-            ctx.fillStyle = 'rgba(8, 11, 18, 0.15)'; 
-            ctx.fillRect(0, 0, width, height);
-
-            if (phase === 'drawing') {
-                // Configurar estilo NEÓN
-                ctx.lineWidth = 3;
-                ctx.lineCap = 'round';
-                ctx.shadowBlur = 15;
-                ctx.shadowColor = '#00d2ff'; // Brillo Cian
-                
-                // Gradiente lineal para la línea
-                const gradient = ctx.createLinearGradient(0, 0, width, height);
-                gradient.addColorStop(0, '#00d2ff'); // Cian
-                gradient.addColorStop(1, '#b388ff'); // Violeta
-
-                ctx.strokeStyle = gradient;
-
-                ctx.beginPath();
-                // Dibujar todo lo acumulado hasta drawIndex
-                // (Dibujar segmento por segmento para animar)
-                if (points.length > 0) {
-                    let startDraw = Math.max(0, drawIndex - 100); // Opcional: dibujar solo la "cabeza" o todo
-                    // Dibujamos TODO el trazo acumulado para que se vea la estructura formándose
-                    
-                    ctx.beginPath();
-                    for (let i = 0; i < drawIndex; i++) {
-                        if (i === 0) ctx.moveTo(points[i].x, points[i].y);
-                        else ctx.lineTo(points[i].x, points[i].y);
-                    }
-                    ctx.stroke();
-                }
-
-                // Acelerar el dibujo
-                drawIndex += 4;
-
-                if (drawIndex >= points.length) {
-                    phase = 'waiting';
-                    showText();
-                    // Esperar 4 segundos antes de explotar
-                    setTimeout(explodeToParticles, 4000);
-                }
-            } 
-            else if (phase === 'waiting') {
-                // Mantener el dibujo visible y pulsando levemente
-                ctx.shadowBlur = 20 + Math.sin(Date.now() / 200) * 10;
-                ctx.shadowColor = '#00d2ff';
-                const gradient = ctx.createLinearGradient(0, 0, width, height);
-                gradient.addColorStop(0, '#00d2ff');
-                gradient.addColorStop(1, '#b388ff');
-                ctx.strokeStyle = gradient;
-                ctx.lineWidth = 3;
-                
-                ctx.beginPath();
-                for (let i = 0; i < points.length; i++) {
-                    if (i === 0) ctx.moveTo(points[i].x, points[i].y);
-                    else ctx.lineTo(points[i].x, points[i].y);
-                }
-                ctx.stroke();
-            }
-            else if (phase === 'particles') {
-                // Modo fluido/partículas
-                ctx.shadowBlur = 0; // Quitar shadow para rendimiento
-                // Usar additive blending para que las partículas brillen al juntarse
-                ctx.globalCompositeOperation = 'lighter'; 
-                
-                particles.forEach(p => {
-                    p.update();
-                    p.draw();
-                });
-                
-                // Restaurar modo normal
-                ctx.globalCompositeOperation = 'source-over';
-            }
-
-            requestAnimationFrame(loop);
-        }
-
-        function showText() {
-            document.getElementById('msg1').classList.add('visible');
-            document.getElementById('msg2').classList.add('visible');
-        }
-
-        // --- INICIO ---
-        resize();
-        calculateSpirograph();
-        loop();
-
     </script>
 </body>
 </html>
