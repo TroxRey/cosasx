@@ -2,124 +2,296 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Para Sofia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Para Sofia 💜</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
         body {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #fce4ec; /* Fondo rosa pastel suave */
+            min-height: 100vh;
+            min-height: 100dvh;
+            background: linear-gradient(135deg, #e8d5f2 0%, #f5e6fa 50%, #e0d4f7 100%);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden; /* Evitar scroll cuando el botón crece */
+            overflow: hidden;
             flex-direction: column;
             text-align: center;
+            position: relative;
+        }
+
+        /* Corazones flotantes de fondo */
+        .hearts-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .floating-heart {
+            position: absolute;
+            font-size: 20px;
+            animation: floatUp 6s ease-in infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
         }
 
         .container {
             position: relative;
             z-index: 10;
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+            transition: all 0.5s ease;
         }
 
         h1 {
-            color: #d81b60;
-            font-size: 2.5rem;
+            color: #7c4dff;
+            font-size: clamp(1.3rem, 5vw, 2.2rem);
+            margin-bottom: 15px;
+            padding: 0 10px;
+            text-shadow: 2px 2px 4px rgba(124, 77, 255, 0.3);
+            line-height: 1.3;
+            transition: all 0.3s ease;
+        }
+
+        .gif-container {
             margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.5s ease;
         }
 
         .gif-container img {
-            width: 200px;
+            width: clamp(120px, 35vw, 180px);
+            max-width: 80%;
             height: auto;
             border-radius: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            transition: all 0.5s ease;
+        }
+
+
+
+        /* Barra de progreso */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: rgba(124, 77, 255, 0.2);
+            z-index: 100;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #7c4dff, #ff69b4);
+            width: 0%;
+            transition: width 0.5s ease;
         }
 
         .buttons {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             justify-content: center;
             align-items: center;
             flex-wrap: wrap;
+            padding: 10px;
+            min-height: 120px;
         }
 
         button {
             padding: 15px 30px;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             font-weight: bold;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            touch-action: manipulation;
+            position: relative;
         }
 
         #yesBtn {
-            background-color: #4caf50;
+            background: linear-gradient(145deg, #5cb85c, #4caf50);
             color: white;
+            z-index: 100;
+            animation: pulse 2s infinite;
         }
 
-        #yesBtn:hover {
-            background-color: #43a047;
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4); }
+            50% { box-shadow: 0 8px 40px rgba(76, 175, 80, 0.7); }
+        }
+
+        #yesBtn:hover, #yesBtn:active {
+            background: linear-gradient(145deg, #4caf50, #43a047);
             transform: scale(1.05);
         }
 
         #noBtn {
-            background-color: #f44336;
+            background: linear-gradient(145deg, #ff6b6b, #f44336);
             color: white;
+            position: absolute;
+            transition: all 0.15s ease;
+            z-index: 50;
         }
 
         #noBtn:hover {
-            background-color: #e53935;
+            background: linear-gradient(145deg, #f44336, #e53935);
         }
 
-        /* Animación de confeti simple para el final */
+        /* Animación de confeti */
         .confetti {
-            position: absolute;
+            position: fixed;
             width: 10px;
             height: 10px;
-            background-color: #f00;
+            top: -10px;
             animation: fall linear forwards;
+            z-index: 1000;
         }
 
         @keyframes fall {
             to {
-                transform: translateY(100vh) rotate(720deg);
+                transform: translateY(105vh) rotate(720deg);
             }
         }
 
         .floating-gif {
-            position: absolute;
-            width: 120px;
+            position: fixed;
+            width: clamp(50px, 12vw, 80px);
             height: auto;
             pointer-events: none;
             z-index: 5;
             opacity: 0;
-            animation: fadeInFloat 1s forwards;
+            animation: fadeInFloat 0.8s forwards;
             border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
         @keyframes fadeInFloat {
-            0% { opacity: 0; transform: translateY(20px) scale(0.8); }
-            100% { opacity: 0.9; transform: translateY(0) scale(1); }
+            0% { opacity: 0; transform: translateY(20px) scale(0.5) rotate(-10deg); }
+            100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+        }
+
+        /* Animación de shake */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0) rotate(0); }
+            20% { transform: translateX(-8px) rotate(-3deg); }
+            40% { transform: translateX(8px) rotate(3deg); }
+            60% { transform: translateX(-5px) rotate(-2deg); }
+            80% { transform: translateX(5px) rotate(2deg); }
+        }
+
+        .shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        /* Mensaje dramático */
+        .dramatic-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: clamp(2rem, 10vw, 4rem);
+            color: #7c4dff;
+            opacity: 0;
+            z-index: 200;
+            pointer-events: none;
+            text-shadow: 2px 2px 10px rgba(124, 77, 255, 0.5);
+            animation: dramaticPop 1s ease forwards;
+        }
+
+        @keyframes dramaticPop {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        /* Pantalla de éxito */
+        .success-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Efecto de fondo cambiante */
+        .sad-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0);
+            pointer-events: none;
+            z-index: 2;
+            transition: background 0.5s ease;
+        }
+
+        /* Lágrimas flotantes */
+        .tear {
+            position: fixed;
+            font-size: 30px;
+            animation: tearFall 2s linear forwards;
+            z-index: 150;
+            pointer-events: none;
+        }
+
+        @keyframes tearFall {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .buttons {
+                flex-direction: column;
+                gap: 12px;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    
+    <div class="hearts-bg" id="heartsBg"></div>
+    <div class="sad-overlay" id="sadOverlay"></div>
 
-    <div class="container">
+    <div class="container" id="mainContainer">
         <div class="gif-container">
-            <!-- Gif inicial: Osito triste o pidiendo -->
-            <img id="mainGif" src="https://i.pinimg.com/originals/58/c4/3e/58c43e97759448da090ea606053807ee.gif" alt="Osito pidiendo perdón">
+            <img id="mainGif" src="https://media.giphy.com/media/TRgyI2f0hRHBS/giphy.gif" alt="Triste">
         </div>
         
-        <h1 id="question">¿Me perdonas, Sofia? 🥺</h1>
+        <h1 id="question">¿Me perdonas, Sofia? 🥺✨</h1>
         
-        <div class="buttons">
-            <button id="yesBtn">Sí, te perdono</button>
+        <div class="buttons" id="buttonsContainer">
+            <button id="yesBtn">¡Sí, te perdono!</button>
             <button id="noBtn">No</button>
         </div>
     </div>
@@ -129,85 +301,334 @@
         const noBtn = document.getElementById('noBtn');
         const question = document.getElementById('question');
         const mainGif = document.getElementById('mainGif');
+        const buttonsContainer = document.getElementById('buttonsContainer');
+        const progressBar = document.getElementById('progressBar');
+        const sadOverlay = document.getElementById('sadOverlay');
+        const heartsBg = document.getElementById('heartsBg');
         
-        let yesBtnSize = 1.2; // Tamaño inicial en rem
         let clickCount = 0;
+        const maxClicks = 10; // Después de esto es imposible decir no
+        
+        // Crear elementos flotantes de fondo (variedad de emojis)
+        const floatingEmojis = ['✨', '💜', '🦋', '🌸', '⭐', '🌟', '💖', '🌼', '🎀', '🧚'];
+        
+        function createFloatingElements() {
+            for (let i = 0; i < 12; i++) {
+                setTimeout(() => {
+                    const element = document.createElement('span');
+                    element.className = 'floating-heart';
+                    element.innerHTML = floatingEmojis[Math.floor(Math.random() * floatingEmojis.length)];
+                    element.style.left = Math.random() * 100 + 'vw';
+                    element.style.animationDelay = Math.random() * 6 + 's';
+                    element.style.fontSize = (Math.random() * 18 + 14) + 'px';
+                    heartsBg.appendChild(element);
+                    
+                    setTimeout(() => element.remove(), 6000);
+                }, i * 500);
+            }
+        }
+        createFloatingElements();
+        setInterval(createFloatingElements, 6000);
 
-        // Frases para el botón "No"
+        // Frases progresivas para la pregunta (cada vez más dramático)
+        const questionTexts = [
+            "¿Me perdonas, Sofia? 🥺✨",
+            "¿Segura que no me perdonas? 😢",
+            "Por favor, Sofia... 🙏",
+            "¡Voy a llorar si dices que no! 😭",
+            "Sofia, no me hagas esto... 😿",
+            "¿Por qué me haces esto? 😭😭",
+            "¡SOFIA PORFAVOR! 😭🙏",
+            "No puedo vivir sin tu perdón... 😢",
+            "¡ÚLTIMA OPORTUNIDAD! 🙏⭐",
+            "YA NO HAY ESCAPE 😈✨"
+        ];
+
+        // Frases para el botón "No" (cada vez más pequeño/desesperado)
         const noTexts = [
-            "¿Estás segura?",
-            "¿De verdad?",
-            "Piénsalo bien...",
-            "Por favor 🥺",
-            "Mira que voy a llorar",
-            "No seas así...",
-            "Me romperás el corazón 💔",
-            "Anda, di que sí",
-            "No tienes otra opción 😎"
+            "¿Segura?",
+            "Piénsalo...",
+            "Ay no 🥺",
+            "😢",
+            "🥀",
+            "...",
+            "😭",
+            "☠️",
+            "💀",
+            ""
         ];
 
-        // Lista de GIFs tristes para cuando dice que No
+        // Frases para el botón "Sí" (crece exponencialmente)
+        const yesTexts = [
+            "¡Sí, te perdono!",
+            "¡SÍ, TE PERDONO! ✨",
+            "¡¡SÍ!! ¡TE PERDONO! 🌟🌟",
+            "¡¡¡SÍIII!!! ⭐⭐⭐",
+            "✨ ¡CLARO QUE SÍ! ✨",
+            "🦋 ¡OBVIO! 🦋",
+            "¡SOY TU PERDÓN! 🌸",
+            "¡HAAAAZ CLICK! ✨",
+            "¡¡AQUÍ!! ¡¡AQUÍ!! 🌟🌟",
+            "✨⭐✨ SÍ ✨⭐✨"
+        ];
+
+        // GIFs que cambian según la tristeza
         const sadGifs = [
-            "https://i.pinimg.com/originals/eff/22/23/eff223df966d84f2a6839d9c62009551.gif", // Gato llorando
-            "https://i.pinimg.com/originals/b4/68/07/b46807276875309a3c45e7177d72d566.gif", // Panda triste
-            "https://i.pinimg.com/originals/58/c4/3e/58c43e97759448da090ea606053807ee.gif", // Osito triste
-            "https://i.pinimg.com/originals/f6/a5/f7/f6a5f79789285269951d879674498839.gif"  // Otro triste
+            "https://media.giphy.com/media/TRgyI2f0hRHBS/giphy.gif",
+            "https://media.giphy.com/media/3o6wrvdHFbwBrUFenu/giphy.gif",
+            "https://media.giphy.com/media/d2lcHJTG5Tscg/giphy.gif",
+            "https://media.giphy.com/media/L95W4wv8nnb9K/giphy.gif"
         ];
 
-        noBtn.addEventListener('click', () => {
+        // Mensajes dramáticos que aparecen
+        const dramaticMessages = ["🥀", "😭", "¡NO!", "¿POR QUÉ?", "PORFA", "😢😢", "✨✨✨"];
+
+        // Función para mostrar mensaje dramático
+        function showDramaticMessage(text) {
+            const msg = document.createElement('div');
+            msg.className = 'dramatic-message';
+            msg.textContent = text;
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 1000);
+        }
+
+        // Función para crear lágrimas
+        function createTears() {
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const tear = document.createElement('span');
+                    tear.className = 'tear';
+                    tear.textContent = '💧';
+                    tear.style.left = Math.random() * 100 + 'vw';
+                    tear.style.top = '0';
+                    document.body.appendChild(tear);
+                    setTimeout(() => tear.remove(), 2000);
+                }, i * 100);
+            }
+        }
+
+        // Función para mover el botón No (huye del cursor - más suave)
+        function moveNoButton(e) {
+            if (clickCount < 3) return; // Empieza a huir después de 3 clicks
+            
+            const btn = noBtn.getBoundingClientRect();
+            const btnCenterX = btn.left + btn.width / 2;
+            const btnCenterY = btn.top + btn.height / 2;
+            
+            let mouseX, mouseY;
+            if (e.type.includes('touch')) {
+                mouseX = e.touches[0].clientX;
+                mouseY = e.touches[0].clientY;
+            } else {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            }
+            
+            const distance = Math.hypot(mouseX - btnCenterX, mouseY - btnCenterY);
+            
+            // Solo huye si está MUY cerca (más fácil de clickear)
+            if (distance < 80) {
+                const angle = Math.atan2(btnCenterY - mouseY, btnCenterX - mouseX);
+                // Movimiento más suave y corto
+                const moveDistance = 50 + Math.min(clickCount * 10, 80);
+                
+                let newX = btn.left + Math.cos(angle) * moveDistance;
+                let newY = btn.top + Math.sin(angle) * moveDistance;
+                
+                // Mantener BIEN dentro de la pantalla (con más margen)
+                const margin = 50;
+                newX = Math.max(margin, Math.min(window.innerWidth - btn.width - margin, newX));
+                newY = Math.max(margin + 60, Math.min(window.innerHeight - btn.height - margin, newY));
+                
+                // Transición más suave
+                noBtn.style.transition = 'left 0.3s ease, top 0.3s ease';
+                noBtn.style.left = newX + 'px';
+                noBtn.style.top = newY + 'px';
+            }
+        }
+
+        // Event listeners para que el botón huya
+        document.addEventListener('mousemove', moveNoButton);
+        document.addEventListener('touchmove', moveNoButton, { passive: true });
+
+        // Click en botón No
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
             clickCount++;
             
-            // Aumentar tamaño del botón Sí
-            yesBtnSize *= 1.3; // Crece un 30% cada vez
-            yesBtn.style.fontSize = `${yesBtnSize}rem`;
+            // Actualizar barra de progreso (hacia el "sí")
+            progressBar.style.width = Math.min((clickCount / maxClicks) * 100, 100) + '%';
             
-            // Cambiar texto del botón No
-            const randomText = noTexts[Math.min(clickCount, noTexts.length - 1)];
-            noBtn.innerText = randomText;
-
-            // Agregar un GIF triste flotante en una posición aleatoria
-            const randomGif = sadGifs[Math.floor(Math.random() * sadGifs.length)];
+            // ===== CRECIMIENTO EXPONENCIAL del botón Sí =====
+            const exponentialGrowth = Math.pow(1.5, clickCount); // 1.5^clickCount
+            const baseSize = 100; // px inicial
+            const newSize = Math.min(baseSize * exponentialGrowth, window.innerWidth * 0.95);
+            const newHeight = Math.min(50 + exponentialGrowth * 20, window.innerHeight * 0.7);
+            const newFontSize = Math.min(1 + clickCount * 0.4, 4);
+            
+            yesBtn.style.width = newSize + 'px';
+            yesBtn.style.height = newHeight + 'px';
+            yesBtn.style.fontSize = newFontSize + 'rem';
+            yesBtn.style.position = 'fixed';
+            yesBtn.style.left = '50%';
+            yesBtn.style.top = '50%';
+            yesBtn.style.transform = 'translate(-50%, -50%)';
+            yesBtn.textContent = yesTexts[Math.min(clickCount, yesTexts.length - 1)];
+            
+            // ===== ENCOGER exponencialmente el botón No =====
+            const shrinkFactor = Math.pow(0.7, clickCount); // 0.7^clickCount
+            noBtn.style.transform = `scale(${shrinkFactor})`;
+            noBtn.style.opacity = Math.max(1 - clickCount * 0.12, 0.1);
+            noBtn.textContent = noTexts[Math.min(clickCount, noTexts.length - 1)];
+            
+            // Cambiar pregunta (más dramática)
+            question.textContent = questionTexts[Math.min(clickCount, questionTexts.length - 1)];
+            
+            // Cambiar GIF cada 2 clicks
+            if (clickCount % 2 === 0) {
+                mainGif.src = sadGifs[Math.floor(Math.random() * sadGifs.length)];
+            }
+            
+            // Oscurecer fondo gradualmente
+            const darkness = Math.min(clickCount * 0.03, 0.3);
+            sadOverlay.style.background = `rgba(0, 0, 0, ${darkness})`;
+            
+            // Efectos visuales
+            showDramaticMessage(dramaticMessages[Math.floor(Math.random() * dramaticMessages.length)]);
+            noBtn.classList.add('shake');
+            setTimeout(() => noBtn.classList.remove('shake'), 400);
+            
+            // Crear lágrimas
+            if (clickCount >= 3) {
+                createTears();
+            }
+            
+            // Agregar GIF triste flotante
             const img = document.createElement('img');
-            img.src = randomGif;
+            img.src = sadGifs[Math.floor(Math.random() * sadGifs.length)];
             img.classList.add('floating-gif');
+            img.onerror = () => img.remove();
             
-            // Posición aleatoria (evitando el centro exacto donde están los botones si es posible, pero aleatorio está bien)
-            const x = Math.random() * (window.innerWidth - 150);
-            const y = Math.random() * (window.innerHeight - 150);
-            
-            img.style.left = `${x}px`;
-            img.style.top = `${y}px`;
-            
+            // Posición en los bordes
+            const positions = [
+                { x: Math.random() * 100 + 10, y: 70 },
+                { x: Math.random() * 100 + 10, y: window.innerHeight - 100 },
+                { x: 10, y: Math.random() * (window.innerHeight - 150) + 60 },
+                { x: window.innerWidth - 90, y: Math.random() * (window.innerHeight - 150) + 60 }
+            ];
+            const pos = positions[Math.floor(Math.random() * positions.length)];
+            img.style.left = pos.x + 'px';
+            img.style.top = pos.y + 'px';
             document.body.appendChild(img);
+            
+            // Después de maxClicks, el botón No desaparece
+            if (clickCount >= maxClicks) {
+                noBtn.style.display = 'none';
+                question.textContent = "¡Solo queda una opción! 💜";
+                showDramaticMessage("💜💜💜");
+            }
+            
+            // Efecto de vibración del dispositivo (si está disponible)
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
         });
 
+        // Click en botón Sí
         yesBtn.addEventListener('click', () => {
-            // Cambiar a estado de éxito
+            // Vibración de celebración
+            if (navigator.vibrate) {
+                navigator.vibrate([100, 50, 100, 50, 200]);
+            }
+            
             document.body.innerHTML = `
-                <div class="container">
-                    <h1 style="font-size: 3rem; color: #e91e63;">¡Siii! ¡Sabía que lo harías! ✨</h1>
-                    <div class="gif-container">
-                        <img src="https://i.pinimg.com/originals/dc/49/23/dc4923744623736929d01d0140546452.gif" alt="Baile feliz" style="width: 300px;">
+                <div class="success-screen">
+                    <h1 style="font-size: clamp(1.8rem, 8vw, 3rem); color: #7c4dff; margin-bottom: 20px; animation: fadeIn 0.5s ease;">
+                        ¡SÍÍÍ! ¡SABÍA QUE LO HARÍAS! 🎉✨
+                    </h1>
+                    <div style="margin-bottom: 20px;">
+                        <img src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif" alt="Celebración" 
+                             style="width: clamp(180px, 50vw, 300px); border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.3);">
                     </div>
-                    <p style="font-size: 1.5rem; color: #880e4f;">Eres la mejor.</p>
+                    <p style="font-size: clamp(1.2rem, 5vw, 2rem); color: #7c4dff; margin-bottom: 15px;">
+                        Eres la mejor, Sofia ✨🌸
+                    </p>
+                    
+                    <div style="background: linear-gradient(145deg, #fff9e6, #fff3cd); border: 3px dashed #ffc107; border-radius: 20px; padding: 20px; margin: 20px 10px; max-width: 350px; box-shadow: 0 10px 30px rgba(255, 193, 7, 0.3);">
+                        <p style="font-size: clamp(1rem, 4vw, 1.3rem); color: #7c4dff; margin-bottom: 10px; font-weight: bold;">🎫 ¡Te ganaste un cupón! 🎫</p>
+                        <p style="font-size: clamp(1.5rem, 6vw, 2rem); margin: 15px 0;">🍫 1 Chocolate 🍫</p>
+                        <p style="font-size: clamp(0.9rem, 3vw, 1.1rem); color: #666; margin-bottom: 15px;">+ Un cupón en blanco para lo que quieras ✨</p>
+                        <a href="https://wa.me/529712631970?text=¡Hola!%20Vengo%20a%20reclamar%20mi%20cupón%20de%20chocolate%20🍫✨" 
+                           target="_blank" 
+                           style="display: inline-block; background: linear-gradient(145deg, #25D366, #128C7E); color: white; padding: 15px 30px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: clamp(1rem, 4vw, 1.2rem); box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4); transition: transform 0.3s ease;">
+                            📱 Reclamar por WhatsApp
+                        </a>
+                    </div>
                 </div>
             `;
             
-            // Lanzar confeti (efecto visual simple)
+            // Mega confeti de celebración
             createConfetti();
+            
+            // Más elementos flotando en celebración
+            const celebrationEmojis = ['✨', '⭐', '🌟', '🎉', '🦋', '🌸'];
+            setInterval(() => {
+                for (let i = 0; i < 5; i++) {
+                    const element = document.createElement('span');
+                    element.style.cssText = `
+                        position: fixed;
+                        font-size: ${Math.random() * 30 + 20}px;
+                        left: ${Math.random() * 100}vw;
+                        bottom: -50px;
+                        animation: floatUp 4s ease-out forwards;
+                        z-index: 1000;
+                    `;
+                    element.textContent = celebrationEmojis[Math.floor(Math.random() * celebrationEmojis.length)];
+                    document.body.appendChild(element);
+                    setTimeout(() => element.remove(), 4000);
+                }
+            }, 500);
         });
 
         function createConfetti() {
-            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
-            for (let i = 0; i < 100; i++) {
-                const confetti = document.createElement('div');
-                confetti.classList.add('confetti');
-                confetti.style.left = Math.random() * 100 + 'vw';
-                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
-                document.body.appendChild(confetti);
+            const colors = ['#7c4dff', '#b388ff', '#e8d5f2', '#ff69b4', '#ffd700', '#00ff88', '#ff6b6b'];
+            const shapes = ['✨', '⭐', '🎉', '💫', '🌟', '🦋', '🌸'];
+            
+            for (let i = 0; i < 200; i++) {
+                setTimeout(() => {
+                    const isEmoji = Math.random() > 0.6;
+                    const confetti = document.createElement('div');
+                    confetti.style.cssText = `
+                        position: fixed;
+                        top: -20px;
+                        left: ${Math.random() * 100}vw;
+                        font-size: ${isEmoji ? Math.random() * 20 + 15 : 0}px;
+                        width: ${isEmoji ? 'auto' : (Math.random() * 10 + 5) + 'px'};
+                        height: ${isEmoji ? 'auto' : (Math.random() * 10 + 5) + 'px'};
+                        background: ${isEmoji ? 'transparent' : colors[Math.floor(Math.random() * colors.length)]};
+                        border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
+                        animation: fall ${Math.random() * 3 + 2}s linear forwards;
+                        z-index: 1000;
+                    `;
+                    confetti.textContent = isEmoji ? shapes[Math.floor(Math.random() * shapes.length)] : '';
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 5000);
+                }, i * 20);
             }
         }
+
+        // Inicializar posición del botón No
+        const initNoBtn = () => {
+            const container = buttonsContainer.getBoundingClientRect();
+            noBtn.style.left = (container.left + container.width / 2 + 80) + 'px';
+            noBtn.style.top = (container.top + container.height / 2) + 'px';
+        };
+        
+        window.addEventListener('load', initNoBtn);
+        window.addEventListener('resize', initNoBtn);
+    </script>
+</body>
+</html>
     </script>
 </body>
 </html>
