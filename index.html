@@ -4,11 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Para Sofia 💜</title>
+    <!-- html2canvas para guardar cupones como imagen -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body {
+            width: 100%;
+            overflow-x: hidden;
         }
         
         body {
@@ -19,13 +27,14 @@
             min-height: 100dvh;
             background: linear-gradient(135deg, #e8d5f2 0%, #f5e6fa 50%, #e0d4f7 100%);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden;
+            overflow-x: hidden;
             flex-direction: column;
             text-align: center;
             position: relative;
+            padding: 10px;
         }
 
-        /* Corazones flotantes de fondo */
+        /* Emojis flotantes de fondo */
         .hearts-bg {
             position: fixed;
             top: 0;
@@ -54,37 +63,39 @@
         .container {
             position: relative;
             z-index: 10;
-            padding: 20px;
+            padding: clamp(15px, 4vw, 25px);
             width: 100%;
-            max-width: 600px;
+            max-width: 500px;
             transition: all 0.5s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: clamp(12px, 3vw, 20px);
         }
 
         h1 {
             color: #7c4dff;
-            font-size: clamp(1.3rem, 5vw, 2.2rem);
-            margin-bottom: 15px;
+            font-size: clamp(1.1rem, 4.5vw, 2rem);
             padding: 0 10px;
             text-shadow: 2px 2px 4px rgba(124, 77, 255, 0.3);
-            line-height: 1.3;
+            line-height: 1.4;
             transition: all 0.3s ease;
         }
 
         .gif-container {
-            margin-bottom: 20px;
             transition: all 0.5s ease;
+            display: flex;
+            justify-content: center;
         }
 
         .gif-container img {
-            width: clamp(120px, 35vw, 180px);
+            width: clamp(100px, 28vw, 150px);
             max-width: 80%;
             height: auto;
             border-radius: 15px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.15);
             transition: all 0.5s ease;
         }
-
-
 
         /* Barra de progreso */
         .progress-container {
@@ -106,17 +117,19 @@
 
         .buttons {
             display: flex;
-            gap: 15px;
+            gap: clamp(12px, 3vw, 20px);
             justify-content: center;
             align-items: center;
             flex-wrap: wrap;
             padding: 10px;
-            min-height: 120px;
+            min-height: 80px;
+            width: 100%;
+            position: relative;
         }
 
         button {
-            padding: 15px 30px;
-            font-size: 1.1rem;
+            padding: clamp(12px, 3vw, 18px) clamp(24px, 6vw, 36px);
+            font-size: clamp(0.9rem, 3.5vw, 1.15rem);
             border: none;
             border-radius: 50px;
             cursor: pointer;
@@ -124,7 +137,8 @@
             font-weight: bold;
             box-shadow: 0 8px 25px rgba(0,0,0,0.2);
             touch-action: manipulation;
-            position: relative;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         #yesBtn {
@@ -132,28 +146,36 @@
             color: white;
             z-index: 100;
             animation: pulse 2s infinite;
+            min-width: 130px;
+            position: relative;
         }
 
         @keyframes pulse {
             0%, 100% { box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4); }
-            50% { box-shadow: 0 8px 40px rgba(76, 175, 80, 0.7); }
+            50% { box-shadow: 0 8px 40px rgba(76, 175, 80, 0.8); }
         }
 
         #yesBtn:hover, #yesBtn:active {
             background: linear-gradient(145deg, #4caf50, #43a047);
-            transform: scale(1.05);
+            transform: scale(1.08);
         }
 
         #noBtn {
             background: linear-gradient(145deg, #ff6b6b, #f44336);
             color: white;
-            position: absolute;
-            transition: all 0.15s ease;
-            z-index: 50;
+            position: fixed;
+            transition: left 0.3s ease-out, top 0.3s ease-out, transform 0.2s ease, opacity 0.3s ease;
+            z-index: 99;
+            min-width: 70px;
+            box-shadow: 0 6px 20px rgba(244, 67, 54, 0.5);
         }
 
         #noBtn:hover {
             background: linear-gradient(145deg, #f44336, #e53935);
+        }
+
+        #noBtn:active {
+            transform: scale(0.95) !important;
         }
 
         /* Animación de confeti */
@@ -174,7 +196,7 @@
 
         .floating-gif {
             position: fixed;
-            width: clamp(50px, 12vw, 80px);
+            width: clamp(40px, 10vw, 65px);
             height: auto;
             pointer-events: none;
             z-index: 5;
@@ -228,10 +250,12 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             min-height: 100vh;
-            padding: 20px;
+            padding: clamp(15px, 4vw, 30px);
             animation: fadeIn 0.5s ease;
+            overflow-y: auto;
+            padding-top: clamp(20px, 5vh, 40px);
         }
 
         @keyframes fadeIn {
@@ -266,11 +290,111 @@
             100% { transform: translateY(100vh) scale(0.5); opacity: 0; }
         }
 
-        /* Responsive */
-        @media (max-width: 480px) {
+        /* Cupones mejorados */
+        .coupon {
+            border-radius: 20px;
+            padding: clamp(20px, 5vw, 30px);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.3);
+            border: 4px dashed #FFD700;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .coupon-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 215, 0, 0.3);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .coupon-emoji {
+            font-size: clamp(2.5rem, 10vw, 4rem);
+            margin: 0 0 10px 0;
+            text-align: center;
+        }
+
+        .coupon-title {
+            font-size: clamp(1.1rem, 4.5vw, 1.5rem);
+            color: #fff;
+            margin: 0;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .coupon-subtitle {
+            font-size: clamp(0.95rem, 4vw, 1.2rem);
+            margin: 8px 0 0 0;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .save-btn {
+            background: linear-gradient(145deg, #7c4dff, #9b6dff);
+            color: white;
+            padding: clamp(10px, 2.5vw, 14px) clamp(18px, 4vw, 28px);
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: clamp(0.8rem, 3vw, 0.95rem);
+            box-shadow: 0 6px 20px rgba(124, 77, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .save-btn:hover, .save-btn:active {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(124, 77, 255, 0.6);
+        }
+
+        .whatsapp-btn {
+            display: inline-block;
+            background: linear-gradient(145deg, #25D366, #128C7E);
+            color: white;
+            padding: clamp(14px, 3.5vw, 18px) clamp(30px, 7vw, 45px);
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: clamp(0.95rem, 3.5vw, 1.15rem);
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.5);
+            transition: all 0.3s ease;
+            border: 2px solid #fff;
+        }
+
+        .whatsapp-btn:hover, .whatsapp-btn:active {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(37, 211, 102, 0.7);
+        }
+
+        /* Responsive para pantallas muy pequeñas */
+        @media (max-width: 360px) {
             .buttons {
                 flex-direction: column;
-                gap: 12px;
+                gap: 10px;
+            }
+
+            .coupon {
+                padding: 18px;
+            }
+        }
+
+        /* Responsive para tablets */
+        @media (min-width: 768px) {
+            .container {
+                gap: 25px;
+            }
+
+            .buttons {
+                min-height: 100px;
             }
         }
     </style>
@@ -307,30 +431,31 @@
         const heartsBg = document.getElementById('heartsBg');
         
         let clickCount = 0;
-        const maxClicks = 10; // Después de esto es imposible decir no
+        const maxClicks = 6; // Después de 6 clicks desaparece el botón No
+        let noBtnInitialized = false;
         
         // Crear elementos flotantes de fondo (variedad de emojis)
         const floatingEmojis = ['✨', '💜', '🦋', '🌸', '⭐', '🌟', '💖', '🌼', '🎀', '🧚'];
         
         function createFloatingElements() {
-            for (let i = 0; i < 12; i++) {
+            for (let i = 0; i < 10; i++) {
                 setTimeout(() => {
                     const element = document.createElement('span');
                     element.className = 'floating-heart';
                     element.innerHTML = floatingEmojis[Math.floor(Math.random() * floatingEmojis.length)];
                     element.style.left = Math.random() * 100 + 'vw';
-                    element.style.animationDelay = Math.random() * 6 + 's';
-                    element.style.fontSize = (Math.random() * 18 + 14) + 'px';
+                    element.style.animationDelay = Math.random() * 5 + 's';
+                    element.style.fontSize = (Math.random() * 16 + 14) + 'px';
                     heartsBg.appendChild(element);
                     
                     setTimeout(() => element.remove(), 6000);
-                }, i * 500);
+                }, i * 400);
             }
         }
         createFloatingElements();
-        setInterval(createFloatingElements, 6000);
+        setInterval(createFloatingElements, 5000);
 
-        // Frases progresivas para la pregunta (cada vez más dramático)
+        // Frases progresivas para la pregunta
         const questionTexts = [
             "¿Me perdonas, Sofia? 🥺✨",
             "¿Segura que no me perdonas? 😢",
@@ -338,38 +463,21 @@
             "¡Voy a llorar si dices que no! 😭",
             "Sofia, no me hagas esto... 😿",
             "¿Por qué me haces esto? 😭😭",
-            "¡SOFIA PORFAVOR! 😭🙏",
-            "No puedo vivir sin tu perdón... 😢",
-            "¡ÚLTIMA OPORTUNIDAD! 🙏⭐",
-            "YA NO HAY ESCAPE 😈✨"
+            "¡SOFIA PORFAVOR! 😭🙏"
         ];
 
-        // Frases para el botón "No" (cada vez más pequeño/desesperado)
-        const noTexts = [
-            "¿Segura?",
-            "Piénsalo...",
-            "Ay no 🥺",
-            "😢",
-            "🥀",
-            "...",
-            "😭",
-            "☠️",
-            "💀",
-            ""
-        ];
+        // Frases para el botón "No"
+        const noTexts = ["¿Segura?", "Piénsalo...", "Ay no 🥺", "😢", "🥀", "..."];
 
-        // Frases para el botón "Sí" (crece exponencialmente)
+        // Frases para el botón "Sí"
         const yesTexts = [
             "¡Sí, te perdono!",
             "¡SÍ, TE PERDONO! ✨",
-            "¡¡SÍ!! ¡TE PERDONO! 🌟🌟",
-            "¡¡¡SÍIII!!! ⭐⭐⭐",
+            "¡¡SÍ!! ¡TE PERDONO! 🌟",
+            "¡¡¡SÍIII!!! ⭐⭐",
             "✨ ¡CLARO QUE SÍ! ✨",
             "🦋 ¡OBVIO! 🦋",
-            "¡SOY TU PERDÓN! 🌸",
-            "¡HAAAAZ CLICK! ✨",
-            "¡¡AQUÍ!! ¡¡AQUÍ!! 🌟🌟",
-            "✨⭐✨ SÍ ✨⭐✨"
+            "¡HAAAAZ CLICK! ✨"
         ];
 
         // GIFs que cambian según la tristeza
@@ -394,7 +502,7 @@
 
         // Función para crear lágrimas
         function createTears() {
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < 4; i++) {
                 setTimeout(() => {
                     const tear = document.createElement('span');
                     tear.className = 'tear';
@@ -407,9 +515,36 @@
             }
         }
 
-        // Función para mover el botón No (huye del cursor - más suave)
+        // Inicializar posición del botón No
+        function initNoBtn() {
+            if (clickCount >= maxClicks) return;
+            
+            const container = buttonsContainer.getBoundingClientRect();
+            const btnWidth = noBtn.offsetWidth || 80;
+            const btnHeight = noBtn.offsetHeight || 50;
+            
+            // Posicionar a la derecha del botón Sí
+            let initialX = Math.min(container.left + container.width / 2 + 70, window.innerWidth - btnWidth - 20);
+            let initialY = Math.max(container.top + container.height / 2 - btnHeight / 2, 60);
+            
+            // Asegurar que esté en pantalla
+            initialX = Math.max(20, Math.min(initialX, window.innerWidth - btnWidth - 20));
+            initialY = Math.max(60, Math.min(initialY, window.innerHeight - btnHeight - 20));
+            
+            noBtn.style.left = initialX + 'px';
+            noBtn.style.top = initialY + 'px';
+            noBtnInitialized = true;
+        }
+        
+        window.addEventListener('load', () => {
+            setTimeout(initNoBtn, 100);
+        });
+        window.addEventListener('resize', initNoBtn);
+
+        // Función para mover el botón No (huye del cursor)
         function moveNoButton(e) {
-            if (clickCount < 3) return; // Empieza a huir después de 3 clicks
+            if (clickCount < 3 || clickCount >= maxClicks) return; // Huye después de 3 clicks
+            if (!noBtnInitialized) return;
             
             const btn = noBtn.getBoundingClientRect();
             const btnCenterX = btn.left + btn.width / 2;
@@ -426,22 +561,19 @@
             
             const distance = Math.hypot(mouseX - btnCenterX, mouseY - btnCenterY);
             
-            // Solo huye si está MUY cerca (más fácil de clickear)
-            if (distance < 80) {
+            // Solo huye si está cerca (100px)
+            if (distance < 100) {
                 const angle = Math.atan2(btnCenterY - mouseY, btnCenterX - mouseX);
-                // Movimiento más suave y corto
-                const moveDistance = 50 + Math.min(clickCount * 10, 80);
+                const moveDistance = 60 + Math.min(clickCount * 15, 100);
                 
                 let newX = btn.left + Math.cos(angle) * moveDistance;
                 let newY = btn.top + Math.sin(angle) * moveDistance;
                 
-                // Mantener BIEN dentro de la pantalla (con más margen)
-                const margin = 50;
+                // Mantener dentro de la pantalla con margen
+                const margin = 25;
                 newX = Math.max(margin, Math.min(window.innerWidth - btn.width - margin, newX));
-                newY = Math.max(margin + 60, Math.min(window.innerHeight - btn.height - margin, newY));
+                newY = Math.max(margin + 50, Math.min(window.innerHeight - btn.height - margin, newY));
                 
-                // Transición más suave
-                noBtn.style.transition = 'left 0.3s ease, top 0.3s ease';
                 noBtn.style.left = newX + 'px';
                 noBtn.style.top = newY + 'px';
             }
@@ -454,17 +586,19 @@
         // Click en botón No
         noBtn.addEventListener('click', (e) => {
             e.preventDefault();
+            e.stopPropagation();
+            
             clickCount++;
             
-            // Actualizar barra de progreso (hacia el "sí")
+            // Actualizar barra de progreso
             progressBar.style.width = Math.min((clickCount / maxClicks) * 100, 100) + '%';
             
-            // ===== CRECIMIENTO EXPONENCIAL del botón Sí =====
-            const exponentialGrowth = Math.pow(1.5, clickCount); // 1.5^clickCount
-            const baseSize = 100; // px inicial
-            const newSize = Math.min(baseSize * exponentialGrowth, window.innerWidth * 0.95);
-            const newHeight = Math.min(50 + exponentialGrowth * 20, window.innerHeight * 0.7);
-            const newFontSize = Math.min(1 + clickCount * 0.4, 4);
+            // Crecimiento exponencial del botón Sí
+            const exponentialGrowth = Math.pow(1.4, clickCount);
+            const baseSize = 100;
+            const newSize = Math.min(baseSize * exponentialGrowth, window.innerWidth * 0.9);
+            const newHeight = Math.min(45 + exponentialGrowth * 18, window.innerHeight * 0.6);
+            const newFontSize = Math.min(1 + clickCount * 0.35, 3.5);
             
             yesBtn.style.width = newSize + 'px';
             yesBtn.style.height = newHeight + 'px';
@@ -475,13 +609,13 @@
             yesBtn.style.transform = 'translate(-50%, -50%)';
             yesBtn.textContent = yesTexts[Math.min(clickCount, yesTexts.length - 1)];
             
-            // ===== ENCOGER exponencialmente el botón No =====
-            const shrinkFactor = Math.pow(0.7, clickCount); // 0.7^clickCount
+            // Encoger el botón No
+            const shrinkFactor = Math.pow(0.75, clickCount);
             noBtn.style.transform = `scale(${shrinkFactor})`;
-            noBtn.style.opacity = Math.max(1 - clickCount * 0.12, 0.1);
+            noBtn.style.opacity = Math.max(1 - clickCount * 0.1, 0.15);
             noBtn.textContent = noTexts[Math.min(clickCount, noTexts.length - 1)];
             
-            // Cambiar pregunta (más dramática)
+            // Cambiar pregunta
             question.textContent = questionTexts[Math.min(clickCount, questionTexts.length - 1)];
             
             // Cambiar GIF cada 2 clicks
@@ -490,7 +624,7 @@
             }
             
             // Oscurecer fondo gradualmente
-            const darkness = Math.min(clickCount * 0.03, 0.3);
+            const darkness = Math.min(clickCount * 0.03, 0.25);
             sadOverlay.style.background = `rgba(0, 0, 0, ${darkness})`;
             
             // Efectos visuales
@@ -509,26 +643,26 @@
             img.classList.add('floating-gif');
             img.onerror = () => img.remove();
             
-            // Posición en los bordes
+            // Posición en las esquinas
             const positions = [
-                { x: Math.random() * 100 + 10, y: 70 },
-                { x: Math.random() * 100 + 10, y: window.innerHeight - 100 },
-                { x: 10, y: Math.random() * (window.innerHeight - 150) + 60 },
-                { x: window.innerWidth - 90, y: Math.random() * (window.innerHeight - 150) + 60 }
+                { x: 15, y: 70 },
+                { x: window.innerWidth - 80, y: 70 },
+                { x: 15, y: window.innerHeight - 90 },
+                { x: window.innerWidth - 80, y: window.innerHeight - 90 }
             ];
             const pos = positions[Math.floor(Math.random() * positions.length)];
             img.style.left = pos.x + 'px';
             img.style.top = pos.y + 'px';
             document.body.appendChild(img);
             
-            // Después de maxClicks, el botón No desaparece
+            // Después de maxClicks (6), el botón No desaparece
             if (clickCount >= maxClicks) {
                 noBtn.style.display = 'none';
                 question.textContent = "¡Solo queda una opción! 💜";
                 showDramaticMessage("💜💜💜");
             }
             
-            // Efecto de vibración del dispositivo (si está disponible)
+            // Vibración del dispositivo
             if (navigator.vibrate) {
                 navigator.vibrate(50);
             }
@@ -543,29 +677,136 @@
             
             document.body.innerHTML = `
                 <div class="success-screen">
-                    <h1 style="font-size: clamp(1.8rem, 8vw, 3rem); color: #7c4dff; margin-bottom: 20px; animation: fadeIn 0.5s ease;">
+                    <h1 style="font-size: clamp(1.5rem, 7vw, 2.5rem); color: #7c4dff; margin-bottom: 15px; animation: fadeIn 0.5s ease;">
                         ¡SÍÍÍ! ¡SABÍA QUE LO HARÍAS! 🎉✨
                     </h1>
-                    <div style="margin-bottom: 20px;">
+                    <div style="margin-bottom: 15px;">
                         <img src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif" alt="Celebración" 
-                             style="width: clamp(180px, 50vw, 300px); border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.3);">
+                             style="width: clamp(150px, 40vw, 250px); border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.25);">
                     </div>
-                    <p style="font-size: clamp(1.2rem, 5vw, 2rem); color: #7c4dff; margin-bottom: 15px;">
+                    <p style="font-size: clamp(1.1rem, 4.5vw, 1.6rem); color: #7c4dff; margin-bottom: 20px;">
                         Eres la mejor, Sofia ✨🌸
                     </p>
                     
-                    <div style="background: linear-gradient(145deg, #fff9e6, #fff3cd); border: 3px dashed #ffc107; border-radius: 20px; padding: 20px; margin: 20px 10px; max-width: 350px; box-shadow: 0 10px 30px rgba(255, 193, 7, 0.3);">
-                        <p style="font-size: clamp(1rem, 4vw, 1.3rem); color: #7c4dff; margin-bottom: 10px; font-weight: bold;">🎫 ¡Te ganaste un cupón! 🎫</p>
-                        <p style="font-size: clamp(1.5rem, 6vw, 2rem); margin: 15px 0;">🍫 1 Chocolate 🍫</p>
-                        <p style="font-size: clamp(0.9rem, 3vw, 1.1rem); color: #666; margin-bottom: 15px;">+ Un cupón en blanco para lo que quieras ✨</p>
-                        <a href="https://wa.me/529712631970?text=¡Hola!%20Vengo%20a%20reclamar%20mi%20cupón%20de%20chocolate%20🍫✨" 
+                    <div style="max-width: 400px; width: 100%; padding: 0 15px;">
+                        <p style="font-size: clamp(1rem, 4vw, 1.3rem); color: #7c4dff; margin-bottom: 15px; font-weight: bold;">🎁 Tus Cupones 🎁</p>
+                        
+                        <div id="couponsContainer" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; align-items: center;">
+                            <!-- Cupón 1: Chocolate -->
+                            <div id="coupon1" class="coupon clickable-coupon" onclick="saveCouponImage('coupon1', 'Cupon_Chocolate_Sofia')" style="background: linear-gradient(135deg, #8B4513, #D2691E);">
+                                <div class="coupon-badge">VÁLIDO</div>
+                                <p class="coupon-emoji">🍫</p>
+                                <p class="coupon-title">Cupón Válido</p>
+                                <p class="coupon-subtitle" style="color: #FFE4B5;">Para un Chocolate</p>
+                                <p class="coupon-save-hint">📸 Toca para guardar</p>
+                            </div>
+                            
+                            <!-- Cupón 2: Dulce -->
+                            <div id="coupon2" class="coupon clickable-coupon" onclick="saveCouponImage('coupon2', 'Cupon_Dulce_Sofia')" style="background: linear-gradient(135deg, #FF69B4, #FFB6C1);">
+                                <div class="coupon-badge">VÁLIDO</div>
+                                <p class="coupon-emoji">🍬</p>
+                                <p class="coupon-title">Cupón Válido</p>
+                                <p class="coupon-subtitle" style="color: #FFF0F5;">Para Algo Dulce</p>
+                                <p class="coupon-save-hint">📸 Toca para guardar</p>
+                            </div>
+                        </div>
+                        
+                        <a href="https://wa.me/529712631970?text=%C2%A1Hola%21%20%F0%9F%92%9C%20Acabo%20de%20perdonarte%20y%20vengo%20a%20reclamar%20mis%20cupones%3A%0A%0A%F0%9F%8D%AB%20Cup%C3%B3n%20de%20Chocolate%0A%F0%9F%8D%AC%20Cup%C3%B3n%20de%20Algo%20Dulce%0A%0A%C2%A1Los%20quiero%20ya%21%20%E2%9C%A8%F0%9F%8E%89" 
                            target="_blank" 
-                           style="display: inline-block; background: linear-gradient(145deg, #25D366, #128C7E); color: white; padding: 15px 30px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: clamp(1rem, 4vw, 1.2rem); box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4); transition: transform 0.3s ease;">
-                            📱 Reclamar por WhatsApp
+                           class="whatsapp-btn">
+                            📱 Reclamar Cupones
                         </a>
                     </div>
                 </div>
             `;
+            
+            // Agregar estilos para los cupones
+            const style = document.createElement('style');
+            style.textContent = `
+                .coupon {
+                    border-radius: 20px;
+                    padding: clamp(20px, 5vw, 30px);
+                    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.3);
+                    border: 4px dashed #FFD700;
+                    position: relative;
+                    overflow: hidden;
+                    width: 100%;
+                    max-width: 320px;
+                }
+                .coupon-badge {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    background: rgba(255, 215, 0, 0.3);
+                    padding: 5px 12px;
+                    border-radius: 20px;
+                    font-size: 0.7rem;
+                    color: #fff;
+                    font-weight: bold;
+                }
+                .coupon-emoji {
+                    font-size: clamp(2.5rem, 10vw, 4rem);
+                    margin: 0 0 10px 0;
+                    text-align: center;
+                }
+                .coupon-title {
+                    font-size: clamp(1.1rem, 4.5vw, 1.5rem);
+                    color: #fff;
+                    margin: 0;
+                    font-weight: bold;
+                    text-align: center;
+                    text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                }
+                .coupon-subtitle {
+                    font-size: clamp(0.95rem, 4vw, 1.2rem);
+                    margin: 8px 0 0 0;
+                    text-align: center;
+                    font-weight: 600;
+                }
+                .coupon-save-hint {
+                    font-size: clamp(0.7rem, 2.8vw, 0.85rem);
+                    margin: 12px 0 0 0;
+                    text-align: center;
+                    color: rgba(255, 255, 255, 0.85);
+                    opacity: 0.9;
+                    transition: all 0.3s ease;
+                }
+                .clickable-coupon {
+                    cursor: pointer;
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                }
+                .clickable-coupon:hover {
+                    transform: scale(1.03);
+                    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.4);
+                }
+                .clickable-coupon:hover .coupon-save-hint {
+                    opacity: 1;
+                    transform: scale(1.05);
+                }
+                .clickable-coupon:active {
+                    transform: scale(0.98);
+                }
+                .whatsapp-btn {
+                    display: inline-block;
+                    background: linear-gradient(145deg, #25D366, #128C7E);
+                    color: white;
+                    padding: clamp(14px, 3.5vw, 18px) clamp(30px, 7vw, 45px);
+                    border-radius: 50px;
+                    text-decoration: none;
+                    font-weight: bold;
+                    font-size: clamp(0.95rem, 3.5vw, 1.15rem);
+                    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.5);
+                    transition: all 0.3s ease;
+                    border: 2px solid #fff;
+                }
+                .whatsapp-btn:hover, .whatsapp-btn:active {
+                    transform: scale(1.05);
+                    box-shadow: 0 10px 30px rgba(37, 211, 102, 0.7);
+                }
+            `;
+            document.head.appendChild(style);
             
             // Mega confeti de celebración
             createConfetti();
@@ -573,11 +814,11 @@
             // Más elementos flotando en celebración
             const celebrationEmojis = ['✨', '⭐', '🌟', '🎉', '🦋', '🌸'];
             setInterval(() => {
-                for (let i = 0; i < 5; i++) {
+                for (let i = 0; i < 4; i++) {
                     const element = document.createElement('span');
                     element.style.cssText = `
                         position: fixed;
-                        font-size: ${Math.random() * 30 + 20}px;
+                        font-size: ${Math.random() * 25 + 18}px;
                         left: ${Math.random() * 100}vw;
                         bottom: -50px;
                         animation: floatUp 4s ease-out forwards;
@@ -587,14 +828,14 @@
                     document.body.appendChild(element);
                     setTimeout(() => element.remove(), 4000);
                 }
-            }, 500);
+            }, 600);
         });
 
         function createConfetti() {
             const colors = ['#7c4dff', '#b388ff', '#e8d5f2', '#ff69b4', '#ffd700', '#00ff88', '#ff6b6b'];
             const shapes = ['✨', '⭐', '🎉', '💫', '🌟', '🦋', '🌸'];
             
-            for (let i = 0; i < 200; i++) {
+            for (let i = 0; i < 150; i++) {
                 setTimeout(() => {
                     const isEmoji = Math.random() > 0.6;
                     const confetti = document.createElement('div');
@@ -602,7 +843,7 @@
                         position: fixed;
                         top: -20px;
                         left: ${Math.random() * 100}vw;
-                        font-size: ${isEmoji ? Math.random() * 20 + 15 : 0}px;
+                        font-size: ${isEmoji ? Math.random() * 18 + 12 : 0}px;
                         width: ${isEmoji ? 'auto' : (Math.random() * 10 + 5) + 'px'};
                         height: ${isEmoji ? 'auto' : (Math.random() * 10 + 5) + 'px'};
                         background: ${isEmoji ? 'transparent' : colors[Math.floor(Math.random() * colors.length)]};
@@ -613,22 +854,66 @@
                     confetti.textContent = isEmoji ? shapes[Math.floor(Math.random() * shapes.length)] : '';
                     document.body.appendChild(confetti);
                     setTimeout(() => confetti.remove(), 5000);
-                }, i * 20);
+                }, i * 25);
             }
         }
 
-        // Inicializar posición del botón No
-        const initNoBtn = () => {
-            const container = buttonsContainer.getBoundingClientRect();
-            noBtn.style.left = (container.left + container.width / 2 + 80) + 'px';
-            noBtn.style.top = (container.top + container.height / 2) + 'px';
+        // Función para guardar cupón como imagen usando html2canvas
+        window.saveCouponImage = async function(couponId, filename) {
+            const coupon = document.getElementById(couponId);
+            if (!coupon) {
+                alert('❌ No se encontró el cupón');
+                return;
+            }
+            
+            // Encontrar el hint y ocultarlo temporalmente
+            const hint = coupon.querySelector('.coupon-save-hint');
+            if (hint) {
+                hint.style.display = 'none';
+            }
+            
+            // Cambiar el hint a "Guardando..." temporalmente
+            const originalHintText = hint ? hint.textContent : '';
+            
+            try {
+                // Usar html2canvas para capturar el cupón
+                const canvas = await html2canvas(coupon, {
+                    scale: 2, // Mayor calidad
+                    backgroundColor: null,
+                    useCORS: true,
+                    logging: false,
+                    allowTaint: true
+                });
+                
+                // Convertir a imagen y descargar
+                const link = document.createElement('a');
+                link.download = filename + '.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                // Mostrar confirmación en el hint
+                if (hint) {
+                    hint.style.display = 'block';
+                    hint.textContent = '✅ ¡Guardado!';
+                    hint.style.color = '#90EE90';
+                    setTimeout(() => {
+                        hint.textContent = originalHintText;
+                        hint.style.color = '';
+                    }, 2000);
+                }
+                
+            } catch (error) {
+                console.error('Error al guardar:', error);
+                
+                // Restaurar hint
+                if (hint) {
+                    hint.style.display = 'block';
+                }
+                
+                // Fallback: abrir en nueva ventana para screenshot manual
+                alert('💡 Tip: Haz una captura de pantalla (screenshot) del cupón para guardarlo 📸');
+            }
         };
-        
-        window.addEventListener('load', initNoBtn);
-        window.addEventListener('resize', initNoBtn);
-    </script>
-</body>
-</html>
     </script>
 </body>
 </html>
